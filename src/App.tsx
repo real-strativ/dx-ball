@@ -3,7 +3,7 @@ import MainMenu from './screens/MainMenu';
 import LevelSelect from './screens/LevelSelect';
 import GameScreen from './screens/GameScreen';
 import { LEVELS } from './game/levels';
-import { loadProgress, saveProgress, type Progress } from './utils/storage';
+import { addTopScore, loadProgress, saveProgress, type Progress } from './utils/storage';
 
 type Screen = 'menu' | 'levels' | 'playing';
 
@@ -31,11 +31,19 @@ export default function App() {
   const handleScore = (score: number) =>
     setProgress((p) => (score > p.highScore ? { ...p, highScore: score } : p));
 
+  // a run is over (game over, last level cleared, restart or quit): rank it
+  const handleRunOver = (score: number) =>
+    setProgress((p) =>
+      score > 0 ? { ...p, topScores: addTopScore(p.topScores, { name: p.playerName.trim(), score }) } : p,
+    );
+
   return (
     <main className="app">
       {screen === 'menu' && (
         <MainMenu
-          highScore={progress.highScore}
+          topScores={progress.topScores}
+          playerName={progress.playerName}
+          onNameChange={(playerName) => setProgress((p) => ({ ...p, playerName }))}
           unlocked={progress.unlocked}
           onPlay={() => startLevel(1)}
           onContinue={() => startLevel(progress.unlocked)}
@@ -57,6 +65,7 @@ export default function App() {
           onExit={() => setScreen('menu')}
           onLevelCleared={handleLevelCleared}
           onScore={handleScore}
+          onRunOver={handleRunOver}
         />
       )}
     </main>

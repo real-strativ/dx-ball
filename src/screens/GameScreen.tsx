@@ -14,6 +14,7 @@ type Props = {
   onExit: () => void;
   onLevelCleared: (level: number, score: number) => void;
   onScore: (score: number) => void;
+  onRunOver: (score: number) => void;
 };
 
 // Picks a play field that matches the shape of the available space:
@@ -36,7 +37,7 @@ function readHud(g: GameState): HudData {
   };
 }
 
-export default function GameScreen({ startLevel, onExit, onLevelCleared, onScore }: Props) {
+export default function GameScreen({ startLevel, onExit, onLevelCleared, onScore, onRunOver }: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
   const gameRef = useRef<GameState>(createGame(startLevel));
@@ -102,10 +103,18 @@ export default function GameScreen({ startLevel, onExit, onLevelCleared, onScore
   }, [windowFullscreen]);
 
   // keep callbacks from props in refs so the game loop never goes stale
-  const callbacks = useRef({ onLevelCleared, onScore });
+  const callbacks = useRef({ onLevelCleared, onScore, onRunOver });
   useEffect(() => {
-    callbacks.current = { onLevelCleared, onScore };
-  }, [onLevelCleared, onScore]);
+    callbacks.current = { onLevelCleared, onScore, onRunOver };
+  }, [onLevelCleared, onScore, onRunOver]);
+
+  // report each run's final score exactly once, however the run ends
+  const runReported = useRef(false);
+  const reportRun = useCallback(() => {
+    if (runReported.current) return;
+    runReported.current = true;
+    callbacks.current.onRunOver(gameRef.current.score);
+  }, []);
 
   useEffect(() => {
     pausedRef.current = paused;
@@ -204,19 +213,30 @@ export default function GameScreen({ startLevel, onExit, onLevelCleared, onScore
           setStatus(g.status);
           if (g.status === 'won') callbacks.current.onLevelCleared(g.level, g.score);
           callbacks.current.onScore(g.score);
+          if (g.status === 'lost' || (g.status === 'won' && g.level >= LEVELS.length)) reportRun();
         }
       },
-      [input],
+      [input, reportRun],
     ),
   );
 
   const startFresh = (level: number, score: number, lives?: number) => {
+    // starting over from zero ends the current run
+    if (score === 0) {
+      reportRun();
+      runReported.current = false;
+    }
     const { width, height } = boardRef.current;
     gameRef.current = createGame(level, score, lives, width, height);
     input.current.launch = false;
     statusRef.current = 'playing';
     setStatus('playing');
     setPaused(false);
+  };
+
+  const exit = () => {
+    reportRun();
+    onExit();
   };
 
   const g = gameRef.current;
@@ -247,7 +267,7 @@ export default function GameScreen({ startLevel, onExit, onLevelCleared, onScore
                 <button className="btn" onClick={() => startFresh(g.level, 0)}>
                   Restart level
                 </button>
-                <button className="btn" onClick={onExit}>
+                <button className="btn" onClick={exit}>
                   Quit to menu
                 </button>
               </div>
@@ -270,7 +290,7 @@ export default function GameScreen({ startLevel, onExit, onLevelCleared, onScore
                     Next level
                   </button>
                 )}
-                <button className="btn" onClick={onExit}>
+                <button className="btn" onClick={exit}>
                   Menu
                 </button>
               </div>
@@ -287,7 +307,7 @@ export default function GameScreen({ startLevel, onExit, onLevelCleared, onScore
                 <button className="btn btn--primary" onClick={() => startFresh(g.level, 0)} autoFocus>
                   Try again
                 </button>
-                <button className="btn" onClick={onExit}>
+                <button className="btn" onClick={exit}>
                   Menu
                 </button>
               </div>

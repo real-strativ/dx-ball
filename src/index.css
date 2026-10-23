@@ -23,7 +23,7 @@ html, body {
   -webkit-font-smoothing: antialiased;
 }
 
-button { font-family: inherit; }
+button, input { font-family: inherit; }
 
 .app {
   min-height: 100vh;
@@ -50,6 +50,9 @@ button { font-family: inherit; }
 .btn--primary { background: var(--blue); border-color: var(--blue); color: #fff; }
 .btn--primary:hover { background: #4a7de0; border-color: #4a7de0; }
 .btn--small { font-size: 13px; padding: 6px 12px; }
+.btn:disabled { opacity: 0.45; cursor: not-allowed; }
+.btn:disabled:hover { border-color: var(--line); background: transparent; }
+.btn--primary:disabled:hover { border-color: var(--blue); background: var(--blue); }
 
 /* ---------- panels ---------- */
 .panel {
@@ -100,6 +103,34 @@ button { font-family: inherit; }
 }
 .menu__stats dt { color: var(--muted); font-size: 13px; }
 .menu__stats dd { margin: 2px 0 0; font-size: 22px; font-weight: 700; }
+.menu__name { display: flex; flex-direction: column; gap: 4px; text-align: left; margin-bottom: 4px; }
+.menu__name span { color: var(--muted); font-size: 13px; }
+.menu__name input {
+  font-size: 16px;
+  color: var(--text);
+  background: var(--panel);
+  border: 2px solid var(--line);
+  border-radius: 6px;
+  padding: 10px 12px;
+}
+.menu__name input:focus-visible { outline: 3px solid var(--amber); outline-offset: 2px; }
+
+.leaderboard { max-width: 320px; margin: 0 auto 24px; }
+.leaderboard__title { margin: 0 0 10px; font-size: 15px; font-weight: 600; color: var(--muted); }
+.leaderboard__empty { margin: 0; color: var(--muted); font-size: 14px; }
+.leaderboard__list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.leaderboard__row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 12px;
+  background: var(--panel);
+  border: 2px solid var(--line);
+  border-radius: 6px;
+}
+.leaderboard__rank { font-weight: 700; color: var(--amber); width: 1.2em; }
+.leaderboard__name { flex: 1; text-align: left; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.leaderboard__score { font-weight: 700; }
 .menu__controls { color: var(--muted); font-size: 14px; margin: 0; }
 
 /* ---------- level select ---------- */
