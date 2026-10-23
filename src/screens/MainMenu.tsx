@@ -3,10 +3,10 @@ import PowerIcon from '../components/PowerIcon';
 import { POWERUP_STYLE } from '../game/constants';
 import { LEVELS } from '../game/levels';
 import type { PowerUpType } from '../game/types';
-import { TOP_SCORES, type ScoreEntry } from '../utils/storage';
+import { TOP_SCORES, type ScoreEntry } from '../utils/leaderboard';
 
 type Props = {
-  topScores: ScoreEntry[];
+  topScores: ScoreEntry[] | null;
   playerName: string;
   onNameChange: (name: string) => void;
   unlocked: number;
@@ -57,7 +57,9 @@ export default function MainMenu({ topScores, playerName, onNameChange, unlocked
 
       <div className="leaderboard">
         <h2 className="leaderboard__title">Top {TOP_SCORES} scorers</h2>
-        {topScores.length === 0 ? (
+        {topScores === null ? (
+          <p className="leaderboard__empty">Leaderboard unavailable right now.</p>
+        ) : topScores.length === 0 ? (
           <p className="leaderboard__empty">No scores yet. Be the first!</p>
         ) : (
           <ol className="leaderboard__list">

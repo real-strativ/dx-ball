@@ -11,6 +11,19 @@ npm run build    # production build into dist/
 npm run preview  # preview the production build
 ```
 
+## Shared leaderboard
+
+The top 3 scores are shared by every player through the `api/scores.ts`
+Vercel function, which stores them in Upstash Redis (free tier).
+
+1. In the Vercel dashboard open your project, then **Storage → Create → Upstash (Redis)**
+   and connect it to the project. This adds the `KV_REST_API_URL` and
+   `KV_REST_API_TOKEN` environment variables.
+2. Redeploy.
+
+`npm run dev` doesn't run the API, so the menu shows "Leaderboard unavailable".
+To test it locally run `vercel env pull` once, then `vercel dev`.
+
 ## Controls
 
 - Move: mouse, touch drag, or Left/Right arrows (A/D)
