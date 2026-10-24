@@ -6,7 +6,7 @@ import type { PowerUpType } from '../game/types';
 import { TOP_SCORES, type ScoreEntry } from '../utils/leaderboard';
 
 type Props = {
-  topScores: ScoreEntry[] | null;
+  topScores: ScoreEntry[] | 'loading' | 'unavailable';
   playerName: string;
   onNameChange: (name: string) => void;
   unlocked: number;
@@ -57,7 +57,9 @@ export default function MainMenu({ topScores, playerName, onNameChange, unlocked
 
       <div className="leaderboard">
         <h2 className="leaderboard__title">Top {TOP_SCORES} scorers</h2>
-        {topScores === null ? (
+        {topScores === 'loading' ? (
+          <p className="leaderboard__empty">Loading…</p>
+        ) : topScores === 'unavailable' ? (
           <p className="leaderboard__empty">Leaderboard unavailable right now.</p>
         ) : topScores.length === 0 ? (
           <p className="leaderboard__empty">No scores yet. Be the first!</p>
