@@ -21,8 +21,9 @@ Vercel function, which stores them in Upstash Redis (free tier).
    `KV_REST_API_TOKEN` environment variables.
 2. Redeploy.
 
-`npm run dev` doesn't run the API, so the menu shows "Leaderboard unavailable".
-To test it locally run `vercel env pull` once, then `vercel dev`.
+`npm run dev` doesn't run the Vercel function, so the dev server serves
+`/api/scores` from memory instead (it resets on restart). To test against the
+real Redis store run `vercel env pull` once, then `vercel dev`.
 
 ## Controls
 

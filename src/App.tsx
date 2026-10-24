@@ -14,8 +14,7 @@ export default function App() {
   const [runId, setRunId] = useState(0);
   const [progress, setProgress] = useState<Progress>(loadProgress);
 
-  // null = still loading or the leaderboard can't be reached
-  const [topScores, setTopScores] = useState<ScoreEntry[] | null>(null);
+  const [topScores, setTopScores] = useState<ScoreEntry[] | 'loading' | 'unavailable'>('loading');
 
   useEffect(() => saveProgress(progress), [progress]);
 
@@ -25,7 +24,7 @@ export default function App() {
     let live = true;
     fetchTopScores()
       .then((list) => live && setTopScores(list))
-      .catch(() => live && setTopScores(null));
+      .catch(() => live && setTopScores('unavailable'));
     return () => {
       live = false;
     };
